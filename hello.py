@@ -1,14 +1,13 @@
 import streamlit as st
-from streamlit_gsheets import GSheetsConnection
-import pandas as pd
 
-# Display Title and Description
-st.title("Vendor Management Portal")
-st.markdown("Enter the details of the new vendor below.")
+if 'something' not in st.session_state:
+    st.session_state.something = ''
 
-url = "https://docs.google.com/spreadsheets/d/1ThyJ0uPa3UNB1Yh1jh6EKIP2OutjFPX2F-GTypyBNYM/edit?usp=sharing"
+st.title("Welcome to compute Request")
+input_value = st.text_input('Something', placeholder='Please enter a value')
+if input_value == 'quit':
+    st.error("You can't quit right now")
 
-conn = st.connection("gsheets", type=GSheetsConnection)
-
-data = conn.read(spreadsheet=url, usecols=[1, 2])
-st.dataframe(data)
+elif input_value != '' and input_value != 'quit':
+    st.session_state.something = input_value
+    st.write(f'Last submission: {st.session_state.something}')
