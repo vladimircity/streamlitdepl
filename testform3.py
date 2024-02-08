@@ -24,6 +24,12 @@ quantity = st.selectbox("Кількість", options=[1,2,3,4,5,6,7,8,9,10,11,1
 customer = st.text_input(label="Клієнт")
 notes = st.text_area(label="Нотатки")
 
+cols=st.columns(2)
+with cols[0]:
+    a = st.text_input('name')
+with cols[1]:
+    a = st.text_input('Year')
+
 if not price:
     flag = True
 else:
@@ -38,9 +44,6 @@ def reset():
 button = st.button('Внести', on_click=reset)
 
 if button:
-    if flag:
-        st.error("Вкажи ціну")
-    else:
-        st.success('Товар Успішно внесено')
+    st.success('Товар Успішно внесено')
 
 ### Discover streamlit necessary fields control
