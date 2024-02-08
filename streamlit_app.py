@@ -37,6 +37,11 @@ with st.form(key="vendor_form"):
     years_in_business = st.slider("Years in Business", 0, 50, 5)
     onboarding_date = st.date_input(label="Onboarding Date")
     additional_info = st.text_area(label="Additional Notes")
+    cols=st.columns(2)
+    with cols[0]:
+        a = st.text_input('name name name name name name name name ')
+    with cols[1]:
+        a = st.text_input('Year')
 
     # Mark mandatory fields
     st.markdown("**required*")
