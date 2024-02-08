@@ -9,7 +9,7 @@ custom_manager = "Інший"
 PRODUCTS = ['', custom_product] + goods['Назва'].values.tolist()
 
 # Display Title and Description
-st.header("Кузов-Центр: створити замоалення")
+st.header("Кузов-Центр: створити замовлення")
 
 
 MANAGERS = ["Віталій", "Сергій", "Тарас", "Інший"]
@@ -44,10 +44,10 @@ if not product or not manager:
         st.success('Товар успішно внесено')
         st.warning('Заповніть наступний товар')
     else:
-        st.warning('Заповніть поле товар')
+        st.warning('Заповніть поля менеджер і товар')
 else:
     button = st.button('Внести', on_click=reset, use_container_width=False, type='primary')
     st.session_state.success = True
 
 
-### Discover streamlit necessary fields control
+### Створити таблицю замовлень
