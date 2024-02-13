@@ -43,10 +43,11 @@ price = int(price) if price else price
 quantity = st.selectbox("Кількість", options=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20], index=0, key='quantity_key')
 customer = st.text_input(label="Клієнт")
 notes = st.text_input(label="Нотатки")
+rate = st.radio(" ", ['👍', '👎'], index=0, horizontal=True)
 
 
 def reset():
-    values_list = ['', manager, 13777, product, 50, price, quantity, customer, notes]
+    values_list = [datetime.now().strftime("%d-%m-%Y %H:%M:%S"), manager, 13777, product, 50, price, quantity, customer, notes]
     save(values_list)
     st.session_state.product_key = ''
     st.session_state.price_key = ''
@@ -69,7 +70,6 @@ else:
 
 def save(values_list):
     print(values_list)
-    print(st.session_state.gsheet.id)
     st.session_state.gsheet.append_row(values_list, value_input_option='USER_ENTERED')
     # st.session_state.gsheet.update('A24', [values_list], value_input_option='USER_ENTERED')
 
