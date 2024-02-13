@@ -1,8 +1,17 @@
 import streamlit as st
-from streamlit_gsheets import GSheetsConnection
-import pandas as pd
+import gspread
+from credentials import CREDENTIALS
+# from streamlit_gsheets import GSheetsConnection
+# import pandas as pd
+from pandas import read_csv
 
-goods = pd.read_csv('price.csv')[['Артикул', 'Назва', 'База']]
+# gclient = gspread.service_account(filename='spreadsheets-api-245210-d2d6dcb5acbc.json')
+gclient = gspread.service_account_from_dict(CREDENTIALS)
+gwb = gclient.open('Kuzov Sales')
+gws = gwb.worksheet('Orders2')
+
+
+goods = read_csv('price.csv')[['Артикул', 'Назва', 'База']]
 
 custom_product = "Ввести вручну..."
 custom_manager = "Інший"
@@ -25,12 +34,16 @@ if product == custom_product:
     product = st.text_input("Введіть назву товару:")
 
 price = st.text_input(label="Ціна", key='price_key')
+price = int(price) if price else price
 quantity = st.selectbox("Кількість", options=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20], index=0, key='quantity_key')
 customer = st.text_input(label="Клієнт")
 notes = st.text_input(label="Нотатки")
 
 
+
 def reset():
+    values_list = ['', manager, 13777, product, 50, price, quantity, customer, notes]
+    save(values_list)
     st.session_state.product_key = ''
     st.session_state.price_key = ''
     st.session_state.quantity_key = 1
@@ -50,4 +63,12 @@ else:
     st.session_state.success = True
 
 
-### Створити таблицю замовлень
+def save(values_list):
+    print(values_list)
+    
+    # gws.append_row(values_list, value_input_option='USER_ENTERED')
+
+
+
+
+
