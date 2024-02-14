@@ -56,7 +56,8 @@ notes = st.text_input(label="Нотатки")
 
 def reset():
     time = datetime.now(timezone('Europe/Kiev')).strftime("%d-%m-%Y %H:%M:%S")
-    values_list = [time, manager, 13777, product, 50, price, quantity, customer, notes]
+    articul, base_price = get_product_info(product)
+    values_list = [time, manager, articul, product, base_price, price, quantity, customer, notes]
     save(values_list)
     st.session_state.product_key = ''
     st.session_state.price_key = ''
@@ -83,4 +84,14 @@ def save(values_list):
     st.session_state.gsheet.append_row(values_list, value_input_option='USER_ENTERED')
    
 
+def get_product_info(product):
+    articul = ''
+    base_price = ''
+    add_df = goods.loc[goods['Назва'] == product]
 
+    if len(add_df):
+        add_dict = add_df.reset_index().to_dict()
+        articul = add_dict['Артикул'][0]
+        base_price = add_dict['База'][0]
+
+    return articul, base_price
