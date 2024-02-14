@@ -2,6 +2,7 @@ import streamlit as st
 import gspread
 from pandas import read_csv
 from datetime import datetime
+from pytz import timezone
 
 
 CREDENTIALS = {
@@ -28,13 +29,13 @@ if 'gsheet' not in st.session_state:
 goods = read_csv('price.csv')[['Артикул', 'Назва', 'База']]
 
 custom_product = "Ввести вручну..."
-custom_manager = "Інший"
+custom_manager = "\+"
 PRODUCTS = ['', custom_product] + goods['Назва'].values.tolist()
 
 # Display Title and Description
 st.header("Кузов-Центр: створити замовлення")
 
-MANAGERS = ["Віталій", "Сергій", "Тарас", "\+"]
+MANAGERS = ["Віталій", "Сергій", "Тарас", custom_manager]
 
 manager = st.radio("Менеджер:", MANAGERS, index=None, horizontal=True)
 if manager == custom_manager: 
@@ -54,7 +55,8 @@ notes = st.text_input(label="Нотатки")
 
 
 def reset():
-    values_list = [datetime.now().strftime("%d-%m-%Y %H:%M:%S"), manager, 13777, product, 50, price, quantity, customer, notes]
+    time = datetime.now(timezone('Europe/Kiev')).strftime("%d-%m-%Y %H:%M:%S")
+    values_list = [time, manager, 13777, product, 50, price, quantity, customer, notes]
     save(values_list)
     st.session_state.product_key = ''
     st.session_state.price_key = ''
