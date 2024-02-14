@@ -34,7 +34,7 @@ PRODUCTS = ['', custom_product] + goods['Назва'].values.tolist()
 # Display Title and Description
 st.header("Кузов-Центр: створити замовлення")
 
-MANAGERS = ["Віталій", "Сергій", "Тарас", "Інший"]
+MANAGERS = ["Віталій", "Сергій", "Тарас", "+"]
 
 manager = st.radio("Менеджер:", MANAGERS, index=None, horizontal=True)
 if manager == custom_manager: 
@@ -50,7 +50,7 @@ price = int(price) if price else price
 quantity = st.selectbox("Кількість", options=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20], index=0, key='quantity_key')
 customer = st.text_input(label="Клієнт")
 notes = st.text_input(label="Нотатки")
-rate = st.radio(" ", ['👍', '👎'], index=0, horizontal=True)
+
 
 
 def reset():
