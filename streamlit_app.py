@@ -78,6 +78,6 @@ else:
 def save(values_list):
     print(values_list)
     st.session_state.gsheet.append_row(values_list, value_input_option='USER_ENTERED')
-    # st.session_state.gsheet.update('A24', [values_list], value_input_option='USER_ENTERED')
+   
 
 
