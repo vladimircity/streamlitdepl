@@ -34,7 +34,7 @@ PRODUCTS = ['', custom_product] + goods['Назва'].values.tolist()
 # Display Title and Description
 st.header("Кузов-Центр: створити замовлення")
 
-MANAGERS = ["Віталій", "Сергій", "Тарас", "+"]
+MANAGERS = ["Віталій", "Сергій", "Тарас", "\+"]
 
 manager = st.radio("Менеджер:", MANAGERS, index=None, horizontal=True)
 if manager == custom_manager: 
