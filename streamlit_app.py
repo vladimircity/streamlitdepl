@@ -72,6 +72,7 @@ if not product or not manager:
         st.warning('Заповніть поля менеджер і товар')
 else:
     button = st.button('Внести', on_click=reset, use_container_width=False, type='primary')
+    st.write('')
     st.session_state.success = True
 
 
