@@ -2,6 +2,7 @@ import streamlit as st
 import gspread
 from pandas import read_csv
 from datetime import datetime
+from pytz import timezone
 
 
 CREDENTIALS = {
@@ -28,13 +29,13 @@ if 'gsheet' not in st.session_state:
 goods = read_csv('price.csv')[['Артикул', 'Назва', 'База']]
 
 custom_product = "Ввести вручну..."
-custom_manager = "Інший"
+custom_manager = "\+"
 PRODUCTS = ['', custom_product] + goods['Назва'].values.tolist()
 
 # Display Title and Description
 st.header("Кузов-Центр: створити замовлення")
 
-MANAGERS = ["Віталій", "Сергій", "Тарас", "Інший"]
+MANAGERS = ["Віталій", "Сергій", "Тарас", custom_manager]
 
 manager = st.radio("Менеджер:", MANAGERS, index=None, horizontal=True)
 if manager == custom_manager: 
@@ -54,7 +55,9 @@ notes = st.text_input(label="Нотатки")
 
 
 def reset():
-    values_list = [datetime.now().strftime("%d-%m-%Y %H:%M:%S"), manager, 13777, product, 50, price, quantity, customer, notes]
+    time = datetime.now(timezone('Europe/Kiev')).strftime("%d-%m-%Y %H:%M:%S")
+    articul, base_price = get_product_info(product)
+    values_list = [time, manager, articul, product, base_price, price, quantity, customer, notes]
     save(values_list)
     st.session_state.product_key = ''
     st.session_state.price_key = ''
@@ -72,7 +75,6 @@ if not product or not manager:
         st.warning('Заповніть поля менеджер і товар')
 else:
     button = st.button('Внести', on_click=reset, use_container_width=False, type='primary')
-    # rate = st.radio(" ", [''], disabled=True)
     st.write('')
     st.session_state.success = True
 
@@ -81,3 +83,15 @@ def save(values_list):
     print(values_list)
     st.session_state.gsheet.append_row(values_list, value_input_option='USER_ENTERED')
    
+
+def get_product_info(product):
+    articul = ''
+    base_price = ''
+    add_df = goods.loc[goods['Назва'] == product]
+
+    if len(add_df):
+        add_dict = add_df.reset_index().to_dict()
+        articul = add_dict['Артикул'][0]
+        base_price = add_dict['База'][0]
+
+    return articul, base_price
