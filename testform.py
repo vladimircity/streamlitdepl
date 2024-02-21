@@ -32,6 +32,20 @@ quantity = st.selectbox("Кількість", options=[1,2,3,4,5,6,7,8,9,10,11,1
 customer = st.text_input(label="Клієнт")
 notes = st.text_input(label="Нотатки")
 
+if not product or not manager:
+    if 'success' not in st.session_state:
+        st.session_state.success = False
+        st.warning('Заповніть поля менеджер і товар')
+    elif st.session_state.success:
+        st.success('Товар успішно внесено')
+        st.warning('Заповніть наступний товар')
+    else:
+        st.warning('Заповніть поля менеджер і товар')
+else:
+    button = st.button('Внести', on_click=send_form, use_container_width=False, type='primary')
+    st.write('')
+    st.session_state.success = True
+
 
 def send_form():
     articul, base_price = get_product_info(product)
@@ -47,21 +61,6 @@ def send_form():
     st.session_state.product_key = ''
     st.session_state.price_key = ''
     st.session_state.quantity_key = 1
-
-
-if not product or not manager:
-    if 'success' not in st.session_state:
-        st.session_state.success = False
-        st.warning('Заповніть поля менеджер і товар')
-    elif st.session_state.success:
-        st.success('Товар успішно внесено')
-        st.warning('Заповніть наступний товар')
-    else:
-        st.warning('Заповніть поля менеджер і товар')
-else:
-    button = st.button('Внести', on_click=send_form, use_container_width=False, type='primary')
-    st.write('')
-    st.session_state.success = True
 
 
 def get_product_info(product):
