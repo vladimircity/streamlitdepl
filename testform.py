@@ -1,98 +1,77 @@
 import streamlit as st
-from streamlit_gsheets import GSheetsConnection
-import pandas as pd
+from pandas import read_csv
+from http.client import HTTPSConnection
+from urllib.parse import quote_plus
 
-goods = pd.read_csv('price.csv')[['Артикул', 'Назва', 'База']]
+if 'conn' not in st.session_state:
+    conn = HTTPSConnection("docs.google.com")
+    st.session_state.conn = conn
+
+goods = read_csv('price.csv')[['Артикул', 'Назва', 'База']]
 
 custom_product = "Ввести вручну..."
-PRODUCTS = [custom_product] + goods['Назва'].values.tolist()
+custom_manager = "\+"
+PRODUCTS = ['', custom_product] + goods['Назва'].values.tolist()
 
 # Display Title and Description
-st.title("Продажа Кузов Центр")
-# st.markdown("Enter the details of the new vendor below.")
+st.header("Кузов-Центр: створити замовлення")
 
-# # Establishing a Google Sheets connection
-# conn = st.connection("gsheets", type=GSheetsConnection)
+MANAGERS = ["Віталій", "Сергій", "Тарас", custom_manager]
 
-# # Fetch existing vendors data
-# existing_data = conn.read(worksheet="Vendors", usecols=list(range(6)), ttl=5)
-# existing_data = existing_data.dropna(how="all")
+manager = st.radio("Менеджер:", MANAGERS, index=None, horizontal=True)
+if manager == custom_manager: 
+    manager = st.text_input("Введіть менеджера:", key='manager_key')
 
-# List of Business Types and Products
-MANAGERS = [
-    "Віталій",
-    "Сергій",
-    "Тарас",
-]
+product = st.selectbox("Товар:", options=PRODUCTS, key='product_key')
+if product == custom_product: 
+    product = st.text_input("Введіть назву товару:")
 
-
-
-# Onboarding New Vendor Form
-with st.form(key="vendor_form"):
-
-    manager = st.selectbox("Менеджер*", options=MANAGERS, index=None)
-
-    placeholder_for_product = st.empty()
-    placeholder_for_optional_text = st.empty()
-    
-    price = st.text_input(label="Ціна")
-    quantity = st.selectbox("Кількість", options=[1,2,3,4,5,6,7,8,9,10,11,12], index=0)
-    customer = st.text_input(label="Клієнт")
-    notes = st.text_area(label="Нотатки")
-
-    # Mark mandatory fields
-    st.markdown("**required*")
-
-    submit_button = st.form_submit_button(label="Submit Vendor Details")
-
-    if submit_button:
-        st.warning("Ensure all mandatory fields are filled.")
-        st.stop()
-    
-# Create selectbox
-with placeholder_for_product:
-    product = st.selectbox("Товар*", options=PRODUCTS, index=None)
+price = st.text_input(label="Ціна", key='price_key')
+price = int(price) if price else price
+quantity = st.selectbox("Кількість", options=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20], index=0, key='quantity_key')
+customer = st.text_input(label="Клієнт")
+notes = st.text_input(label="Нотатки")
 
 
-# Create text input for user entry
-with placeholder_for_optional_text:
-    if product == custom_product: 
-        product = st.text_input("Введіть назву товару:")
+def send_form():
+    articul, base_price = get_product_info(product)
+    payload = f'entry.1975053655={manager}&entry.901466373={articul}&entry.401979653={product}&entry.276639414={base_price}&entry.1723905293={price}&entry.1073455884={quantity}&entry.455948029={customer}&entry.665447278={notes}'
+    payload = quote_plus(payload, safe=';/?:@&=+$,')
+
+    headers = {
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'Cookie': 'COMPASS=spreadsheet_forms=CjIACWuJV7difwhCJlB853IBzNNy6fk2P9dFVjzUI3ZbRv8jL57Lvx7ZhuZHfu-rbN_ySBC3otOuBhpDAAlriVf80MSDJXDJrjynCZ1yTSYU8lKLJxAYDscCzpBkSaPz-Yhum8gQZbNgvEy9j3hD6YwPKJIbVWQYpd4s_tSivg==; S=spreadsheet_forms=OCpyNGOUFsbvKah3eh_93EjrDJhMOf24xlT7uYKYlDA; NID=511=kAtrWXMgZWzRWGyTSoOkvaCh1ap0WiRhqMzMUmA3oUXZNff0eC3ZX0qxlKXmdtCUWqts80zpigaMhtaG0QplApVh1TWO6TfyqwPykf1mviBFT920A9VDkS9PcBmFEGA1klHIAG0eB2vTuvXPYySSJyZda3eEACGEAVK6PJRUyaI'
+    }
+    st.session_state.conn.request("POST", "/forms/u/0/d/e/1FAIpQLSdVmF4ylckGN6fi0TIYI_CM-akggUd3-VHl7IZHP8y2sJ85Yg/formResponse", payload, headers)
+
+    st.session_state.product_key = ''
+    st.session_state.price_key = ''
+    st.session_state.quantity_key = 1
 
 
-# add_df = goods.loc[goods['Назва'] == 'VW Passat B8 2016 накладка туманки правая']
-# add_df['Ціна'] = 250
-# print(add_df)
+if not product or not manager:
+    if 'success' not in st.session_state:
+        st.session_state.success = False
+        st.warning('Заповніть поля менеджер і товар')
+    elif st.session_state.success:
+        st.success('Товар успішно внесено')
+        st.warning('Заповніть наступний товар')
+    else:
+        st.warning('Заповніть поля менеджер і товар')
+else:
+    button = st.button('Внести', on_click=send_form, use_container_width=False, type='primary')
+    st.write('')
+    st.session_state.success = True
 
-    # # If the submit button is pressed
-    # if submit_button:
-    #     # Check if all mandatory fields are filled
-    #     if not company_name or not business_type:
-    #         st.warning("Ensure all mandatory fields are filled.")
-    #         st.stop()
-    #     elif existing_data["CompanyName"].str.contains(company_name).any():
-    #         st.warning("A vendor with this company name already exists.")
-    #         st.stop()
-    #     else:
-    #         # Create a new row of vendor data
-    #         # TODO Create matching columns in gsheet
-    #         vendor_data = pd.DataFrame(
-    #             [
-    #                 {
-    #                     "CompanyName": company_name,
-    #                     "BusinessType": business_type,
-    #                     "Products": ", ".join(products),
-    #                     "YearsInBusiness": years_in_business,
-    #                     "OnboardingDate": onboarding_date.strftime("%Y-%m-%d"),
-    #                     "AdditionalInfo": additional_info,
-    #                 }
-    #             ]
-    #         )
 
-    #         # Add the new vendor data to the existing data
-    #         updated_df = pd.concat([existing_data, vendor_data], ignore_index=True)
+def get_product_info(product):
+    articul = ''
+    base_price = ''
+    add_df = goods.loc[goods['Назва'] == product]
 
-    #         # Update Google Sheets with the new vendor data
-    #         conn.update(worksheet="Vendors", data=updated_df)
+    if len(add_df):
+        add_dict = add_df.reset_index().to_dict()
+        articul = add_dict['Артикул'][0]
+        base_price = add_dict['База'][0]
 
-    #         st.success("Vendor details successfully submitted!")
+    return articul, base_price
