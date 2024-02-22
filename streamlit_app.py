@@ -6,7 +6,7 @@ from urllib.parse import quote_plus
 
 conn = HTTPSConnection('docs.google.com')
 
-goods = read_csv('price.csv')[['Артикул', 'Назва', 'База']]
+goods = read_csv('price.csv', decimal=',')[['Артикул', 'Назва', 'База']]
 
 custom_product = 'Ввести вручну...'
 custom_manager = '\+'
