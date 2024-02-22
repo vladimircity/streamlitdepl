@@ -3,9 +3,11 @@ from pandas import read_csv
 from http.client import HTTPSConnection
 from urllib.parse import quote_plus
 
-if 'conn' not in st.session_state:
-    conn = HTTPSConnection('docs.google.com')
-    st.session_state.conn = conn
+# if 'conn' not in st.session_state:
+#     conn = HTTPSConnection('docs.google.com')
+#     st.session_state.conn = conn
+
+conn = HTTPSConnection('docs.google.com')
 
 goods = read_csv('price.csv')[['Артикул', 'Назва', 'База']]
 
@@ -48,7 +50,8 @@ def send_form():
         'Content-Type': 'application/x-www-form-urlencoded',
         'Cookie': 'COMPASS=spreadsheet_forms=CjIACWuJV7difwhCJlB853IBzNNy6fk2P9dFVjzUI3ZbRv8jL57Lvx7ZhuZHfu-rbN_ySBC3otOuBhpDAAlriVf80MSDJXDJrjynCZ1yTSYU8lKLJxAYDscCzpBkSaPz-Yhum8gQZbNgvEy9j3hD6YwPKJIbVWQYpd4s_tSivg==; S=spreadsheet_forms=OCpyNGOUFsbvKah3eh_93EjrDJhMOf24xlT7uYKYlDA; NID=511=kAtrWXMgZWzRWGyTSoOkvaCh1ap0WiRhqMzMUmA3oUXZNff0eC3ZX0qxlKXmdtCUWqts80zpigaMhtaG0QplApVh1TWO6TfyqwPykf1mviBFT920A9VDkS9PcBmFEGA1klHIAG0eB2vTuvXPYySSJyZda3eEACGEAVK6PJRUyaI',
     }
-    st.session_state.conn.request(
+    # st.session_state.
+    conn.request(
         'POST',
         '/forms/u/0/d/e/1FAIpQLSdVmF4ylckGN6fi0TIYI_CM-akggUd3-VHl7IZHP8y2sJ85Yg/formResponse',
         payload,
