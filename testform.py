@@ -76,7 +76,8 @@ else:
     button = st.button(
         'Внести', on_click=send_form, use_container_width=False, type='primary'
     )
-    st.write('')
+
+    st.write("Подивитись всі [ЗАМОВЛЕННЯ](https://docs.google.com/spreadsheets/d/1ThyJ0uPa3UNB1Yh1jh6EKIP2OutjFPX2F-GTypyBNYM/edit#gid=139450348)")
     st.session_state.success = True
 
 
