@@ -27,13 +27,9 @@ if product == custom_product:
 
 price = st.text_input(label='Ціна', key='price_key')
 price = int(price) if price else price
-quantity = st.selectbox(
-    'Кількість',
-    options=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
-             12, 13, 14, 15, 16, 17, 18, 19, 20],
-    index=0,
-    key='quantity_key',
-)
+
+quantity = st.number_input("Кількість", min_value=1, value=1, key='quantity_key')
+
 customer = st.text_input(label='Клієнт')
 notes = st.text_input(label='Нотатки')
 
