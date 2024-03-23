@@ -1,61 +1,57 @@
 import streamlit as st
-import gspread
 from pandas import read_csv
-from datetime import datetime
+from http.client import HTTPSConnection
+from urllib.parse import quote_plus
 
 
-CREDENTIALS = {
-        "type" : st.secrets["gcp_service_account"]["type"],
-        "project_id" : st.secrets["gcp_service_account"]["project_id"],
-        "private_key_id" : st.secrets["gcp_service_account"]["private_key_id"],
-        "private_key" : st.secrets["gcp_service_account"]["private_key"],
-        "client_email" : st.secrets["gcp_service_account"]["client_email"],
-        "client_id" : st.secrets["gcp_service_account"]["client_id"],
-        "auth_uri" : st.secrets["gcp_service_account"]["auth_uri"],
-        "token_uri" : st.secrets["gcp_service_account"]["token_uri"],
-        "auth_provider_x509_cert_url" : st.secrets["gcp_service_account"]["auth_provider_x509_cert_url"],
-        "client_x509_cert_url" : st.secrets["gcp_service_account"]["client_x509_cert_url"],
-    }
+conn = HTTPSConnection('docs.google.com')
 
+goods = read_csv('price.csv', decimal=',')[['Артикул', 'Назва', 'База']]
 
-if 'gsheet' not in st.session_state:
-    gclient = gspread.service_account_from_dict(CREDENTIALS)
-    gwb = gclient.open('Kuzov Sales')
-    gws = gwb.worksheet('Orders2')
-    print('gws.id =', gws.id)
-    st.session_state.gsheet = gws
-
-goods = read_csv('price.csv')[['Артикул', 'Назва', 'База']]
-
-custom_product = "Ввести вручну..."
-custom_manager = "Інший"
+custom_product = 'Ввести вручну...'
+custom_manager = '\+'
 PRODUCTS = ['', custom_product] + goods['Назва'].values.tolist()
 
 # Display Title and Description
-st.header("Кузов-Центр: створити замовлення")
+st.header('Кузов-Центр: створити замовлення')
 
-MANAGERS = ["Віталій", "Сергій", "Тарас", "Інший"]
+MANAGERS = ['Віталій', 'Сергій', 'Тарас', custom_manager]
 
-manager = st.radio("Менеджер:", MANAGERS, index=None, horizontal=True)
-if manager == custom_manager: 
-    manager = st.text_input("Введіть менеджера:", key='manager_key')
+manager = st.radio('Менеджер:', MANAGERS, index=None, horizontal=True)
+if manager == custom_manager:
+    manager = st.text_input('Введіть менеджера:', key='manager_key')
 
+product = st.selectbox('Товар:', options=PRODUCTS, key='product_key')
+if product == custom_product:
+    product = st.text_input('Введіть назву товару:')
 
-product = st.selectbox("Товар:", options=PRODUCTS, key='product_key')
-if product == custom_product: 
-    product = st.text_input("Введіть назву товару:")
-
-price = st.text_input(label="Ціна", key='price_key')
+price = st.text_input(label='Ціна', key='price_key')
 price = int(price) if price else price
-quantity = st.selectbox("Кількість", options=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20], index=0, key='quantity_key')
-customer = st.text_input(label="Клієнт")
-notes = st.text_input(label="Нотатки")
-rate = st.radio(" ", ['👍', '👎'], index=0, horizontal=True)
+
+quantity = st.number_input("Кількість", min_value=1, value=1, key='quantity_key')
+
+customer = st.text_input(label='Клієнт')
+notes = st.text_input(label='Нотатки')
 
 
-def reset():
-    values_list = [datetime.now().strftime("%d-%m-%Y %H:%M:%S"), manager, 13777, product, 50, price, quantity, customer, notes]
-    save(values_list)
+def send_form():
+    articul, base_price = get_product_info(product)
+    total = price * quantity
+    payload = f'entry.1975053655={manager}&entry.901466373={articul}&entry.401979653={product}&entry.276639414={base_price}&entry.1723905293={price}&entry.1073455884={quantity}&entry.1287285077={total}&entry.455948029={customer}&entry.665447278={notes}'
+    payload = quote_plus(payload, safe=';/?:@&=+$,')
+
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Cookie': 'COMPASS=spreadsheet_forms=CjIACWuJV7difwhCJlB853IBzNNy6fk2P9dFVjzUI3ZbRv8jL57Lvx7ZhuZHfu-rbN_ySBC3otOuBhpDAAlriVf80MSDJXDJrjynCZ1yTSYU8lKLJxAYDscCzpBkSaPz-Yhum8gQZbNgvEy9j3hD6YwPKJIbVWQYpd4s_tSivg==; S=spreadsheet_forms=OCpyNGOUFsbvKah3eh_93EjrDJhMOf24xlT7uYKYlDA; NID=511=kAtrWXMgZWzRWGyTSoOkvaCh1ap0WiRhqMzMUmA3oUXZNff0eC3ZX0qxlKXmdtCUWqts80zpigaMhtaG0QplApVh1TWO6TfyqwPykf1mviBFT920A9VDkS9PcBmFEGA1klHIAG0eB2vTuvXPYySSJyZda3eEACGEAVK6PJRUyaI',
+    }
+
+    conn.request(
+        'POST',
+        '/forms/u/0/d/e/1FAIpQLSdVmF4ylckGN6fi0TIYI_CM-akggUd3-VHl7IZHP8y2sJ85Yg/formResponse',
+        payload,
+        headers,
+    )
+
     st.session_state.product_key = ''
     st.session_state.price_key = ''
     st.session_state.quantity_key = 1
@@ -71,13 +67,24 @@ if not product or not manager:
     else:
         st.warning('Заповніть поля менеджер і товар')
 else:
-    button = st.button('Внести', on_click=reset, use_container_width=False, type='primary')
+    button = st.button(
+        'Внести', on_click=send_form, use_container_width=False, type='primary'
+    )
+
+    st.write('')
     st.session_state.success = True
 
+st.write("Подивитись всі  [ЗАМОВЛЕННЯ](https://docs.google.com/spreadsheets/d/1ThyJ0uPa3UNB1Yh1jh6EKIP2OutjFPX2F-GTypyBNYM/edit#gid=139450348)")
+    
 
-def save(values_list):
-    print(values_list)
-    st.session_state.gsheet.append_row(values_list, value_input_option='USER_ENTERED')
-   
+def get_product_info(product):
+    articul = ''
+    base_price = ''
+    add_df = goods.loc[goods['Назва'] == product]
 
+    if len(add_df):
+        add_dict = add_df.reset_index().to_dict()
+        articul = add_dict['Артикул'][0]
+        base_price = add_dict['База'][0]
 
+    return articul, base_price
