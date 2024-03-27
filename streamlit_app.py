@@ -2,7 +2,6 @@ import streamlit as st
 from pandas import read_csv
 from http.client import HTTPSConnection
 from urllib.parse import quote_plus
-import streamlit.components.v1 as components
 
 conn = HTTPSConnection('docs.google.com')
 
@@ -68,22 +67,9 @@ if not product or not manager:
     else:
         st.warning('Заповніть поля менеджер і товар')
 else:
-    components.html("""
-        <script>
-        const inputs = window.parent.document.querySelectorAll('input');
-        inputs.forEach(input => {
-            input.addEventListener('keydown', function(event) {
-                if (event.key === 'Enter') {
-                    event.preventDefault();
-                }
-            });
-        });
-        </script>""", height=0) # For not to press Enter on every field
-    
     button = st.button(
         'Внести', on_click=send_form, use_container_width=False, type='primary'
     )
-
     st.write('')
     st.session_state.success = True
 
