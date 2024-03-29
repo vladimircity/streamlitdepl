@@ -27,7 +27,8 @@ if product == custom_product:
 price = st.text_input(label='Ціна', key='price_key')
 price = int(price) if price else price
 
-st.session_state.quantity_key = 1  # Default value 1
+if 'quantity_key' not in st.session_state:
+    st.session_state.quantity_key = 1  # Default value 1
 quantity = st.number_input("Кількість", min_value=1, key='quantity_key')
 
 customer = st.text_input(label='Клієнт')
