@@ -88,3 +88,4 @@ def get_product_info(product):
         base_price = add_dict['База'][0]
 
     return articul, base_price
+    
