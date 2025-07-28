@@ -12,7 +12,7 @@ custom_manager = '\+'
 PRODUCTS = ['', custom_product] + goods['Назва'].values.tolist()
 
 # Display Title and Description
-st.header('Кузов-Центр')
+st.header('Кузов-Центр: Треба, щоб контейнер приїхав')
 
 MANAGERS = ['Віталій', 'Сергій', 'Тарас', custom_manager]
 
