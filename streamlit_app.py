@@ -5,7 +5,7 @@ from urllib.parse import quote_plus
 
 conn = HTTPSConnection('docs.google.com')
 
-goods = read_csv('price.csv', decimal=',')[['Артикул', 'Назва', 'База']]
+goods = read_csv('price.csv', decimal=',')[['Артикул', 'Назва', 'Ціна']]
 
 custom_product = 'Ввести вручну...'
 custom_manager = '\+'
@@ -85,7 +85,7 @@ def get_product_info(product):
     if len(add_df):
         add_dict = add_df.reset_index().to_dict()
         articul = add_dict['Артикул'][0]
-        base_price = add_dict['База'][0]
+        base_price = add_dict['Ціна'][0]
 
     return articul, base_price
     
