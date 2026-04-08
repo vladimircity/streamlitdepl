@@ -31,7 +31,7 @@ if product == custom_product:
 if product == 'Комплект':
     complect = st.selectbox('Комплект:', options=COMPLECT_LIST, key='complect_key')
 else:
-    products.append(product)
+    product_order.append(product)
 
 
 price = st.text_input(label='Ціна', key='price_key')
@@ -46,7 +46,7 @@ notes = st.text_input(label='Нотатки')
 
 
 def prepare_products():
-    for product in products:
+    for product in product_order:
         send_form(product)
 
 
@@ -73,7 +73,7 @@ def send_form(product):
     st.session_state.quantity_key = 1
 
 
-if not products or not manager:
+if not product_order or not manager:
     if 'success' not in st.session_state:
         st.session_state.success = False
         st.warning('Заповніть поля менеджер і товар')
