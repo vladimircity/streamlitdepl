@@ -26,7 +26,7 @@ product = st.selectbox('Товар:', options=PRODUCTS, key='product_key')
 if product == custom_product:
     product = st.text_input('Введіть назву товару:')
 if product == 'Комплект':
-    complect = st.selectbox('Комплект:', options=PRODUCTS, key='complect_key')
+    complect = st.selectbox('Комплект:', options=COMPLECTS, key='complect_key')
 
 
 price = st.text_input(label='Ціна', key='price_key')
