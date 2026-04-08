@@ -12,7 +12,7 @@ custom_product = 'Ввести вручну...'
 custom_manager = '\+'
 PRODUCT_LIST = ['', 'Комплект', custom_product] + goods['Назва'].values.tolist()
 
-COMPLECT_LIST = ['', 'Тестовий комплект']
+COMPLECT_LIST = [''] + complects['Комплект'].unique().tolist()
 
 product_order = []
 
