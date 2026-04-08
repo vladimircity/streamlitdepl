@@ -56,7 +56,8 @@ def prepare_products():
         triples = complects[complects['Комплект'] == product][['Артикул', 'Назва', 'Ціна']].dropna().values.tolist()
         for triple in triples:
             articul, name, base_price = triple
-            payload = f'entry.1975053655={manager}&entry.901466373={articul}&entry.401979653={product}&entry.276639414={base_price}&entry.1723905293={price}&entry.1073455884={quantity}&entry.1287285077={total}&entry.455948029={customer}&entry.665447278={notes}'
+            total = price * quantity
+            payload = f'entry.1975053655={manager}&entry.901466373={articul}&entry.401979653={name}&entry.276639414={base_price}&entry.1723905293={price}&entry.1073455884={quantity}&entry.1287285077={total}&entry.455948029={customer}&entry.665447278={notes}'
             payload = quote_plus(payload, safe=';/?:@&=+$,')
             send_form(payload)
             sleep(1)
