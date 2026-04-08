@@ -45,6 +45,7 @@ notes = st.text_input(label='Нотатки')
 
 
 def prepare_products(product):
+    product = product
     if not "Комплект:" in product:
         articul, base_price = get_product_info(product)
         total = price * quantity
@@ -55,6 +56,7 @@ def prepare_products(product):
 
 
 def send_form(payload):
+    payload = payload
     # articul, base_price = get_product_info(product)
     # total = price * quantity
     # payload = f'entry.1975053655={manager}&entry.901466373={articul}&entry.401979653={product}&entry.276639414={base_price}&entry.1723905293={price}&entry.1073455884={quantity}&entry.1287285077={total}&entry.455948029={customer}&entry.665447278={notes}'
