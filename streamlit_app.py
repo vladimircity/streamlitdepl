@@ -62,6 +62,10 @@ def prepare_products():
             send_form(payload)
             sleep(1)
 
+    st.session_state.product_key = ''
+    st.session_state.price_key = ''
+    st.session_state.quantity_key = 1
+
 
 
 def send_form(payload):
@@ -83,9 +87,9 @@ def send_form(payload):
         headers,
     )
 
-    st.session_state.product_key = ''
-    st.session_state.price_key = ''
-    st.session_state.quantity_key = 1
+    # st.session_state.product_key = ''
+    # st.session_state.price_key = ''
+    # st.session_state.quantity_key = 1
 
 
 if not product or not manager:
