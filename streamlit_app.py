@@ -69,6 +69,7 @@ def prepare_products():
 
 
 def send_form(payload):
+    conn = HTTPSConnection('docs.google.com')
     payload = payload
     # articul, base_price = get_product_info(product)
     # total = price * quantity
