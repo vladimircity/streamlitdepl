@@ -61,8 +61,8 @@ def prepare_products():
         for triple in triples:
             articul, name, base_price = triple
             quantity = 1
-            local_price = base_price * profit_koef
-            total = local_price * quantity
+            local_price = round(base_price * profit_koef, 2)
+            total = round(local_price * quantity, 2)
             notess = notes + ' Заг ' + str(price)
             payload = f'entry.1975053655={manager}&entry.901466373={articul}&entry.401979653={name}&entry.276639414={base_price}&entry.1723905293={local_price}&entry.1073455884={quantity}&entry.1287285077={total}&entry.455948029={customer}&entry.665447278={notess}'
             payload = quote_plus(payload, safe=';/?:@&=+$,')
