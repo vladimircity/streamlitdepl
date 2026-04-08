@@ -56,8 +56,6 @@ def prepare_products():
     else:
         triples = complects[complects['Комплект'] == product][['Артикул', 'Назва', 'Ціна']].dropna().values.tolist()
         total_sum = complects[complects['Комплект'] == product]['Ціна'].sum()
-        if not price:
-            price = 0
         profit_koef = price / total_sum
 
         for triple in triples:
