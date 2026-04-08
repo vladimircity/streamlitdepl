@@ -6,12 +6,15 @@ from urllib.parse import quote_plus
 conn = HTTPSConnection('docs.google.com')
 
 goods = read_csv('price.csv', decimal=',')[['Артикул', 'Назва', 'Ціна']]
+complects = read_csv('complects.csv', decimal=',')[['Комплект','Артикул', 'Назва', 'Ціна']]
 
 custom_product = 'Ввести вручну...'
 custom_manager = '\+'
-PRODUCTS = ['', 'Комплект', custom_product] + goods['Назва'].values.tolist()
+PRODUCT_LIST = ['', 'Комплект', custom_product] + goods['Назва'].values.tolist()
 
-COMPLECTS = ['', 'Тестовий комплект']
+COMPLECT_LIST = ['', 'Тестовий комплект']
+
+product_order = []
 
 # Display Title and Description
 st.header('Кузов-Центр')
@@ -22,11 +25,13 @@ manager = st.radio('Менеджер:', MANAGERS, index=None, horizontal=True)
 if manager == custom_manager:
     manager = st.text_input('Введіть менеджера:', key='manager_key')
 
-product = st.selectbox('Товар:', options=PRODUCTS, key='product_key')
+product = st.selectbox('Товар:', options=PRODUCT_LIST, key='product_key')
 if product == custom_product:
     product = st.text_input('Введіть назву товару:')
 if product == 'Комплект':
-    complect = st.selectbox('Комплект:', options=COMPLECTS, key='complect_key')
+    complect = st.selectbox('Комплект:', options=COMPLECT_LIST, key='complect_key')
+else:
+    products.append(product)
 
 
 price = st.text_input(label='Ціна', key='price_key')
@@ -40,7 +45,12 @@ customer = st.text_input(label='Клієнт')
 notes = st.text_input(label='Нотатки')
 
 
-def send_form():
+def prepare_products():
+    for product in products:
+        send_form(product)
+
+
+def send_form(product):
     articul, base_price = get_product_info(product)
     total = price * quantity
     payload = f'entry.1975053655={manager}&entry.901466373={articul}&entry.401979653={product}&entry.276639414={base_price}&entry.1723905293={price}&entry.1073455884={quantity}&entry.1287285077={total}&entry.455948029={customer}&entry.665447278={notes}'
@@ -63,7 +73,7 @@ def send_form():
     st.session_state.quantity_key = 1
 
 
-if not product or not manager:
+if not products or not manager:
     if 'success' not in st.session_state:
         st.session_state.success = False
         st.warning('Заповніть поля менеджер і товар')
@@ -74,7 +84,7 @@ if not product or not manager:
         st.warning('Заповніть поля менеджер і товар')
 else:
     button = st.button(
-        'Внести', on_click=send_form, use_container_width=False, type='primary'
+        'Внести', on_click=prepare_products, use_container_width=False, type='primary'
     )
     st.write('')
     st.session_state.success = True
