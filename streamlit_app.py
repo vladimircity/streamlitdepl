@@ -2,6 +2,7 @@ import streamlit as st
 from pandas import read_csv
 from http.client import HTTPSConnection
 from urllib.parse import quote_plus
+from time import sleep
 
 conn = HTTPSConnection('docs.google.com')
 
@@ -50,8 +51,16 @@ def prepare_products():
         total = price * quantity
         payload = f'entry.1975053655={manager}&entry.901466373={articul}&entry.401979653={product}&entry.276639414={base_price}&entry.1723905293={price}&entry.1073455884={quantity}&entry.1287285077={total}&entry.455948029={customer}&entry.665447278={notes}'
         payload = quote_plus(payload, safe=';/?:@&=+$,')
-
         send_form(payload)
+    else:
+        triples = complects[complects['Комплект'] == product][['Артикул', 'Назва', 'Ціна']].dropna().values.tolist()
+        for triple in triples:
+            articul, name, base_price = triple
+            payload = f'entry.1975053655={manager}&entry.901466373={articul}&entry.401979653={product}&entry.276639414={base_price}&entry.1723905293={price}&entry.1073455884={quantity}&entry.1287285077={total}&entry.455948029={customer}&entry.665447278={notes}'
+            payload = quote_plus(payload, safe=';/?:@&=+$,')
+            send_form(payload)
+            sleep(1)
+
 
 
 def send_form(payload):
