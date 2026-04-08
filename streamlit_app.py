@@ -57,17 +57,14 @@ def prepare_products():
         triples = complects[complects['Комплект'] == product][['Артикул', 'Назва', 'Ціна']].dropna().values.tolist()
         total_sum = complects[complects['Комплект'] == product]['Ціна'].sum()
         profit_koef = price / total_sum
-
+        notes = notes if 'notes' in locals() else ''
         for triple in triples:
             articul, name, base_price = triple
             quantity = 1
             local_price = base_price * profit_koef
             total = local_price * quantity
-            if not notes:
-                notes = ''
-
-            notes = notes + ' Комплект ' + str(price)
-            payload = f'entry.1975053655={manager}&entry.901466373={articul}&entry.401979653={name}&entry.276639414={base_price}&entry.1723905293={price}&entry.1073455884={quantity}&entry.1287285077={total}&entry.455948029={customer}&entry.665447278={notes}'
+            notess = notes + ' Комплект ' + str(price)
+            payload = f'entry.1975053655={manager}&entry.901466373={articul}&entry.401979653={name}&entry.276639414={base_price}&entry.1723905293={price}&entry.1073455884={quantity}&entry.1287285077={total}&entry.455948029={customer}&entry.665447278={notess}'
             payload = quote_plus(payload, safe=';/?:@&=+$,')
             send_form(payload)
             sleep(1)
