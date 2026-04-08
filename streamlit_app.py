@@ -37,6 +37,7 @@ if product == 'Комплект':
 price = st.text_input(label='Ціна', key='price_key')
 price = int(price) if price else price
 
+
 if 'quantity_key' not in st.session_state:
     st.session_state.quantity_key = 1  # Default value 1
 quantity = st.number_input("Кількість", min_value=1, key='quantity_key')
@@ -57,8 +58,8 @@ def prepare_products():
     else:
         triples = complects[complects['Комплект'] == product][['Артикул', 'Назва', 'Ціна']].dropna().values.tolist()
         total_sum = complects[complects['Комплект'] == product]['Ціна'].sum()
-        profit_koef = price / total_sum
-        # notes = notes if 'notes' in locals() else ''
+        profit_koef = price / total_sum if price else 0
+
         for triple in triples:
             articul, name, base_price = triple
             quantity = 1
