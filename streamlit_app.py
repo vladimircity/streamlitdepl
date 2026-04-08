@@ -44,8 +44,7 @@ customer = st.text_input(label='Клієнт')
 notes = st.text_input(label='Нотатки')
 
 
-def prepare_products(product):
-    product = product
+def prepare_products():
     if not "Комплект:" in product:
         articul, base_price = get_product_info(product)
         total = price * quantity
