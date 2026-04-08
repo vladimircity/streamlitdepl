@@ -6,15 +6,15 @@ from urllib.parse import quote_plus
 conn = HTTPSConnection('docs.google.com')
 
 goods = read_csv('price.csv', decimal=',')[['Артикул', 'Назва', 'Ціна']]
-complects = read_csv('complects.csv', delimiter=';', decimal=',')[['Комплект','Артикул', 'Назва', 'Ціна']]
+complects = read_csv('complects.csv', delimiter=';', decimal=',')[
+    ['Комплект', 'Артикул', 'Назва', 'Ціна']]
 
 custom_product = 'Ввести вручну...'
 custom_manager = '\+'
-PRODUCT_LIST = ['', 'Комплект', custom_product] + goods['Назва'].values.tolist()
+PRODUCT_LIST = ['', 'Комплект', custom_product] + \
+    goods['Назва'].values.tolist()
 
 COMPLECT_LIST = [''] + complects['Комплект'].unique().tolist()
-
-product_order = []
 
 # Display Title and Description
 st.header('Кузов-Центр')
@@ -29,9 +29,8 @@ product = st.selectbox('Товар:', options=PRODUCT_LIST, key='product_key')
 if product == custom_product:
     product = st.text_input('Введіть назву товару:')
 if product == 'Комплект':
-    complect = st.selectbox('Комплект:', options=COMPLECT_LIST, key='complect_key')
-else:
-    product_order.append(product)
+    product = st.selectbox(
+        'Комплект:', options=COMPLECT_LIST, key='complect_key')
 
 
 price = st.text_input(label='Ціна', key='price_key')
@@ -45,16 +44,21 @@ customer = st.text_input(label='Клієнт')
 notes = st.text_input(label='Нотатки')
 
 
-def prepare_products():
-    for product in product_order:
-        send_form(product)
+def prepare_products(product):
+    if not "Комплект:" in product:
+        articul, base_price = get_product_info(product)
+        total = price * quantity
+        payload = f'entry.1975053655={manager}&entry.901466373={articul}&entry.401979653={product}&entry.276639414={base_price}&entry.1723905293={price}&entry.1073455884={quantity}&entry.1287285077={total}&entry.455948029={customer}&entry.665447278={notes}'
+        payload = quote_plus(payload, safe=';/?:@&=+$,')
+
+        send_form(payload)
 
 
-def send_form(product):
-    articul, base_price = get_product_info(product)
-    total = price * quantity
-    payload = f'entry.1975053655={manager}&entry.901466373={articul}&entry.401979653={product}&entry.276639414={base_price}&entry.1723905293={price}&entry.1073455884={quantity}&entry.1287285077={total}&entry.455948029={customer}&entry.665447278={notes}'
-    payload = quote_plus(payload, safe=';/?:@&=+$,')
+def send_form(payload):
+    # articul, base_price = get_product_info(product)
+    # total = price * quantity
+    # payload = f'entry.1975053655={manager}&entry.901466373={articul}&entry.401979653={product}&entry.276639414={base_price}&entry.1723905293={price}&entry.1073455884={quantity}&entry.1287285077={total}&entry.455948029={customer}&entry.665447278={notes}'
+    # payload = quote_plus(payload, safe=';/?:@&=+$,')
 
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -73,7 +77,7 @@ def send_form(product):
     st.session_state.quantity_key = 1
 
 
-if not product_order or not manager:
+if not product or not manager:
     if 'success' not in st.session_state:
         st.session_state.success = False
         st.warning('Заповніть поля менеджер і товар')
@@ -89,8 +93,9 @@ else:
     st.write('')
     st.session_state.success = True
 
-st.write("Подивитись всі  [ЗАМОВЛЕННЯ](https://docs.google.com/spreadsheets/d/1ThyJ0uPa3UNB1Yh1jh6EKIP2OutjFPX2F-GTypyBNYM/edit#gid=139450348)")
-    
+st.write(
+    "Подивитись всі  [ЗАМОВЛЕННЯ](https://docs.google.com/spreadsheets/d/1ThyJ0uPa3UNB1Yh1jh6EKIP2OutjFPX2F-GTypyBNYM/edit#gid=139450348)")
+
 
 def get_product_info(product):
     articul = ''
@@ -103,4 +108,3 @@ def get_product_info(product):
         base_price = add_dict['Ціна'][0]
 
     return articul, base_price
-    
