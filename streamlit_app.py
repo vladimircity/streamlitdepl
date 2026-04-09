@@ -47,7 +47,7 @@ notes = st.text_input(label='Нотатки')
 
 
 def prepare_products():
-    if not "Комплект:" in product:
+    if not "@" in product:
         articul, base_price = get_product_info(product)
         quantity = st.session_state.quantity_key
         total = price * quantity
